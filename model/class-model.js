@@ -11,7 +11,7 @@ const classSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  academicYear: {
+  department: {
     type: String,
     required: true,
     trim: true,
@@ -22,15 +22,12 @@ const classSchema = new mongoose.Schema({
       trim: true,
     }
   ],
-  Teacher: {
+  teacher: {
     type: String,
     trim: true,
+    required: true,
   },
-  capacity: {
-    type: Number,
-    default: 30,
-    min: 1,
-  },
+  
   timing: {
     type: String,
     trim: true,

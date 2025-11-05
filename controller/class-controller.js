@@ -2,14 +2,14 @@ import Class from '../model/class-model.js';
 
 export const addClass = async (req, res) => {
   try {
-    const { name, section, academicYear, subjects, classTeacher, capacity } = req.body;
+    const { name, section, department, subjects, timing, teacher } = req.body;
     const newClass = new Class({
       name,
-      section,
-      academicYear,
       subjects,
-      classTeacher,
-      capacity
+      section,
+      department,
+      timing,
+      teacher
     });
     await newClass.save();
     res.status(201).json(newClass);

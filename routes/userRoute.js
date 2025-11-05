@@ -1,5 +1,5 @@
 import express,{Router} from 'express';
-import { registerUser ,loginUser,verify} from '../controller/usercontroller.js';
+import { registerUser ,loginUser,verify,logoutUser} from '../controller/usercontroller.js';
 import { verifyUser } from '../middleware/authMiddleware.js';
 import { addTeacher ,getTeachers,editTeachers} from '../controller/teacher-controller.js';
 import { addStudent,getAllStudents,getStudentById ,editStudent} from '../controller/student.js';
@@ -9,6 +9,7 @@ const router=Router();
 router.post('/register',registerUser)
 router.post('/login',loginUser)
 router.get("/verify",verifyUser,verify);
+router.post("/logout",logoutUser);
 router.post('/teacher',addTeacher);
 router.get("/teacher",getTeachers);
 router.put("/teacher/:id",editTeachers);
@@ -19,7 +20,7 @@ router.get('/student/view/:id',getStudentById);
 router.put('/student/edit/:id',editStudent);
 
 // for classes
-router.post('/class',addClass);
+router.post('/Add-class',addClass);
 router.get('/class',getAllClasses);
 router.get('/class/:id',getClassById);
 export default router;

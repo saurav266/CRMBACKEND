@@ -39,46 +39,69 @@ export const registerUser = async (req, res) => {
 
     });
 
-    
-    
-    
-
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
+
+
 export const loginUser = async (req, res) => {
-    const { email, password } = req.body;
-    if(!email){
-        return  res.status(400).json({ message: "Email is required" });
+  const { email, password } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+  if (!password) {
+    return res.status(400).json({ message: "Password is required" });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid email or password" });
     }
-    if(!password){
-        return  res.status(400).json({ message: "Password is required" });
+
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    if (!isPasswordMatch) {
+      return res.status(400).json({ message: "Invalid email or password" });
     }
-    try {
-        const user=await User.findOne({ email });
-        if(!user){
-            return res.status(400).json({ message: "Invalid email or password" });    
-        }
-        const isPasswordMatch = await bcrypt.compare(password, user.password);
-        if(!isPasswordMatch){
-            return res.status(400).json({ message: "Invalid email or password" });    
-        }
-        const token=jwt.sign({id:user._id,role:user.role},process.env.JWT_SECRET,{
-            expiresIn:'1d'
-        });
-        res.status(200).json({
-            success: true,
-            token,
-            message: "Login successful",
-            user
-        });
-    }
-    catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
+
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+
+    // ✅ Set token in httpOnly cookie
+    res.cookie("token", token, {
+  httpOnly: true,
+  secure: false, // true in production with HTTPS
+  sameSite: "Strict",
+  maxAge: 24 * 60 * 60 * 1000,
+});
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 };
 export const verify=(req,res)=>{
     return res.status(200).json({message:"User verified",user:req.user});
+}
+
+export const logoutUser = (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: false, // true in production with HTTPS
+    sameSite: "lax",
+  });
+  res.status(200).json({ message: "Logout successful" });
 }
