@@ -93,9 +93,18 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-export const verify=(req,res)=>{
-    return res.status(200).json({message:"User verified",user:req.user});
-}
+export const verify = (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: "User verified",
+    user: {
+      id: req.user._id,
+      name: req.user.name,
+      email: req.user.email,
+      role: req.user.role,
+    },
+  });
+};
 
 export const logoutUser = (req, res) => {
   res.clearCookie("token", {
@@ -105,3 +114,4 @@ export const logoutUser = (req, res) => {
   });
   res.status(200).json({ message: "Logout successful" });
 }
+

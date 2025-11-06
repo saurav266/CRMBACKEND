@@ -4,12 +4,12 @@ import bcrypt from "bcrypt";
 
 export const addTeacher = async (req, res) => {
     try {
-        const { name, email, phone, department, salary ,password} = req.body;
+        const { name, email, phone, subject, salary ,password} = req.body;
         const existingTeacher = await techerSchmma.findOne({ email });
         if (existingTeacher) {
             return res.status(400).json({ message: "Teacher with this email already exists" });
         }
-        if (!name || !email || !phone || !department || !salary || !password) {
+        if (!name || !email || !phone || !subject || !salary || !password) {
            return res.status(400).json({ message: 'All fields are required' });
         }
          const haspassword=await bcrypt.hash(password,10)
@@ -18,7 +18,7 @@ export const addTeacher = async (req, res) => {
             name,
             email,
             phone,
-            department,
+            subject,
             
             salary,
             password: haspassword
@@ -32,7 +32,7 @@ export const addTeacher = async (req, res) => {
 
 export const getTeachers = async (req, res) => {
     try {
-        const teachers = await techerSchmma.find().populate('department');
+        const teachers = await techerSchmma.find().populate('subject');
         res.status(200).json({ teachers });
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
@@ -41,7 +41,7 @@ export const getTeachers = async (req, res) => {
 export const editTeachers = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, phone, department, salary, password } = req.body;
+    const { name, email, phone, subject, salary, password } = req.body;
 
     // Find the teacher by ID
     const teacher = await techerSchmma.findById(id);
@@ -53,7 +53,7 @@ export const editTeachers = async (req, res) => {
     if (name) teacher.name = name;
     if (email) teacher.email = email;
     if (phone) teacher.phone = phone;
-    if (department) teacher.department = department;
+    if (subject) teacher.subject = subject;
     if (salary) teacher.salary = salary;
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -83,6 +83,19 @@ export const ShowAllTeacher=async(req,res)=>{
   try {
     const teachers = await techerSchmma.find();
     res.status(200).json({ teachers });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+export const getTeacherById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const teacher = await techerSchmma.findById(id);
+    if (!teacher) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+    res.status(200).json({ teacher });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

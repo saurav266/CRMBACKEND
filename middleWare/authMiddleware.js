@@ -6,14 +6,12 @@ export const verifyUser = async (req, res, next) => {
     const token = req.cookies.token; // ✅ Read token from cookie
 
     if (!token) {
-      return res.status(401).json({ message: "No token provided" });
+      return res.status(401).json({ message: "No token provided" })
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (!decoded) {
       return res.status(401).json({ message: "Invalid token" });
-    }else{
-      res.json({ success: true, user: decoded });
     }
 
     const user = await User.findById(decoded.id).select("-password");

@@ -17,7 +17,7 @@ const studentSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  branch: {
+  class: {
     type: String,
     required: true,
   },

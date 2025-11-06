@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 
 export const addStudent = async (req, res) => {
   try {
-    const { name, email, phone, branch: studentBranch, rollNumber, feesPaid, password } = req.body;
+    const { name, email, phone, class: studentClass, rollNumber, feesPaid, password } = req.body;
 
     // Check if student already exists
     const existingStudent = await Student.findOne({ email });
@@ -19,7 +19,7 @@ export const addStudent = async (req, res) => {
       name,
       email,
       phone,
-      branch: studentBranch,
+      class: studentClass,
       rollNumber,
       feesPaid,
       password: hashedPassword,
@@ -58,12 +58,12 @@ export const getStudentById = async (req, res) => {
 export const editStudent = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, phone, branch: studentBranch, rollNumber, feesPaid, password } = req.body; 
+    const { name, email, phone, class: studentClass, rollNumber, feesPaid, password } = req.body; 
     const updatedData = {
       name,
       email,
       phone,
-      branch: studentBranch,
+      class: studentClass,
       rollNumber,
       feesPaid,
     };
@@ -78,6 +78,20 @@ export const editStudent = async (req, res) => {
     res.status(200).json({ message: 'Student updated successfully', student: updatedStudent });
   } catch (error) {
     console.error('Error updating student:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+export const deleteStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const student = await Student.findByIdAndDelete(id);
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    res.status(200).json({ message: 'Student deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting student:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
